@@ -1,43 +1,55 @@
-import { Produto as ProdutoType } from '../../App'
 import * as S from './styles'
 
-type Props = {
-  produto: ProdutoType
-  aoComprar: (produto: ProdutoType) => void
-  favoritar: (produto: ProdutoType) => void
+type ProdutoData = {
+  id: number
+  nome: string
+  preco: number
+  imagem: string
+}
+
+type ProdutoProps = ProdutoData & {
+  aoComprar: (produto: ProdutoData) => void
+  favoritar: (produto: ProdutoData) => void
   estaNosFavoritos: boolean
 }
 
-export const paraReal = (valor: number) =>
-  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-    valor
-  )
+const paraReal = (valor: number) =>
+  valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-const ProdutoComponent = ({
-  produto,
+const Produto = ({
+  id,
+  nome,
+  preco,
+  imagem,
   aoComprar,
   favoritar,
   estaNosFavoritos
-}: Props) => {
+}: ProdutoProps) => {
   return (
     <S.Produto>
       <S.Capa>
-        <img src={produto.imagem} alt={produto.nome} />
+        <img src={imagem} alt={nome} />
       </S.Capa>
-      <S.Titulo>{produto.nome}</S.Titulo>
+      <S.Titulo>{nome}</S.Titulo>
       <S.Prices>
-        <strong>{paraReal(produto.preco)}</strong>
+        <strong>{paraReal(preco)}</strong>
       </S.Prices>
-      <S.BtnComprar onClick={() => favoritar(produto)} type="button">
+      <S.BtnComprar
+        onClick={() => favoritar({ id, nome, preco, imagem })}
+        type="button"
+      >
         {estaNosFavoritos
           ? '- Remover dos favoritos'
           : '+ Adicionar aos favoritos'}
       </S.BtnComprar>
-      <S.BtnComprar onClick={() => aoComprar(produto)} type="button">
+      <S.BtnComprar
+        onClick={() => aoComprar({ id, nome, preco, imagem })}
+        type="button"
+      >
         Adicionar ao carrinho
       </S.BtnComprar>
     </S.Produto>
   )
 }
 
-export default ProdutoComponent
+export default Produto
