@@ -1,51 +1,43 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../store'
-import { adicionarAoCarrinho } from '../store/reducers/carrinho'
-import { toggleFavorito } from '../store/reducers/favoritos'
+import { Produto as ProdutoType } from '../App'
 import Produto from '../components/Produto'
-import * as S from './styles'
 
-type ProdutoType = {
-  id: number
-  nome: string
-  preco: number
-  imagem: string
-}
+import * as S from './styles'
 
 type Props = {
   produtos: ProdutoType[]
+  favoritos: ProdutoType[]
+  adicionarAoCarrinho: (produto: ProdutoType) => void
+  favoritar: (produto: ProdutoType) => void
 }
 
-const Produtos = ({ produtos }: Props) => {
-  const dispatch = useDispatch()
-  const favoritos = useSelector((state: RootState) => state.favoritos.itens)
+const ProdutosComponent = ({
+  produtos,
+  favoritos,
+  adicionarAoCarrinho,
+  favoritar
+}: Props) => {
+  const produtoEstaNosFavoritos = (produto: ProdutoType) => {
+    const produtoId = produto.id
+    const IdsDosFavoritos = favoritos.map((f) => f.id)
 
-  const aoComprar = (produto: ProdutoType) => {
-    dispatch(adicionarAoCarrinho(produto))
-  }
-
-  const favoritar = (produto: ProdutoType) => {
-    dispatch(toggleFavorito(produto))
+    return IdsDosFavoritos.includes(produtoId)
   }
 
   return (
-    <S.Produtos>
-      {produtos.map((produto) => (
-        <Produto
-          key={produto.id}
-          id={produto.id}
-          nome={produto.nome}
-          preco={produto.preco}
-          imagem={produto.imagem}
-          aoComprar={aoComprar}
-          favoritar={favoritar}
-          estaNosFavoritos={favoritos.some(
-            (item: ProdutoType) => item.id === produto.id
-          )}
-        />
-      ))}
-    </S.Produtos>
+    <>
+      <S.Produtos>
+        {produtos.map((produto) => (
+          <Produto
+            estaNosFavoritos={produtoEstaNosFavoritos(produto)}
+            key={produto.id}
+            produto={produto}
+            favoritar={favoritar}
+            aoComprar={adicionarAoCarrinho}
+          />
+        ))}
+      </S.Produtos>
+    </>
   )
 }
 
-export default Produtos
+export default ProdutosComponent
